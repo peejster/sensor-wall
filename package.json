@@ -1,0 +1,11 @@
+{
+  "name": "sensor-wall",
+  "version": "1.0.0",
+  "description": "Sensor wall collects environment data from multiple sensors and sends it to Azure IoT Hub",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Prasantha Jayakody <prasanthajayakody@hotmail.com>",
+  "license": "MIT"
+}
