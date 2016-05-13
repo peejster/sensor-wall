@@ -37,7 +37,7 @@ var Message = require('azure-iot-device').Message;    // define the message
 
 // Connection string for your Azure IoT Hub instance containing Hostname, Device Id & Device Key in the following format:
 // "HostName=<iothub_host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>"
-var connectionString = 'HostName=conferenceRoomUsage.azure-devices.net;DeviceId=Rainier;SharedAccessKey=s9cW/0rZiM+C6IdZyZrgvrxJyzhLhlK0uLq5/T2jpQg=';
+var connectionString = '<your Azure IoT Hub connection string here>';
 
 // fromConnectionString must specify a transport constructor, coming from any transport package.
 var client = Client.fromConnectionString(connectionString, Protocol);
