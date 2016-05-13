@@ -223,7 +223,7 @@ function displayValues()
 function sendToCloud()
 {
     // create the JSON message with the sensor data
-    var data = JSON.stringify({ deviceId: 'Rainier', sound: soundLevel, light: lightLevel, vibration: vibrationLevel, motion: motionDetected });
+    var data = JSON.stringify({ deviceId: 'office', sound: soundLevel, light: lightLevel, vibration: vibrationLevel, motion: motionDetected });
     var message = new Message(data);
     //message.properties.add('myproperty', 'myvalue');
     
