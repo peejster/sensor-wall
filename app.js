@@ -1,7 +1,7 @@
 // define the GPIO pins each sensor is connected to
 const SOUND_PIN = 0;                                  // sound sensor connected to analog pin 0
 const LIGHT_PIN = 2;                                  // light sensor connected to analog pin 2
-const VIBRATION_PIN = 3;                              // vibration sensor connected to analog pin 3
+const TEMPERATURE_PIN = 3;                            // temperature sensor connected to analog pin 3
 const BUTTON_PIN = 0;                                 // button connected to digital pin 0
 const ENCODER_A_PIN = 2;                              // encoder input A is connected to digital pin 2
 const ENCODER_B_PIN = 3;                              // encoder input B is connected to digital pin 3
@@ -37,7 +37,7 @@ var Message = require('azure-iot-device').Message;    // define the message
 
 // Connection string for your Azure IoT Hub instance containing Hostname, Device Id & Device Key in the following format:
 // "HostName=<iothub_host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>"
-var connectionString = '<your Azure IoT Hub connection string here>';
+var connectionString = 'HostName=conferenceRoomUsage.azure-devices.net;DeviceId=Rainier;SharedAccessKey=s9cW/0rZiM+C6IdZyZrgvrxJyzhLhlK0uLq5/T2jpQg=';
 
 // fromConnectionString must specify a transport constructor, coming from any transport package.
 var client = Client.fromConnectionString(connectionString, Protocol);
@@ -54,8 +54,8 @@ var soundLevel = 0;                                   // store the sound sensor 
 var lightSensor = new mraa.Aio(LIGHT_PIN);            // assign analog pin to light sensor
 var lightLevel = 0;                                   // store the light sensor reading
 
-var vibrationSensor = new mraa.Aio(VIBRATION_PIN);    // assign analog pin to vibration sensor
-var vibrationLevel = 0;                               // store the vibration sensor reading
+var temperatureSensor = new mraa.Aio(TEMPERATURE_PIN);// assign analog pin to vibration sensor
+var temperature = 0;                                  // store the temperature sensor reading
 
 var button = new mraa.Gpio(BUTTON_PIN);               // assign GPIO pin to button
 button.isr(mraa.EDGE_RISING, buttonISR);                // set button interrupt
@@ -83,7 +83,7 @@ function periodicActivity()
 {
     soundLevel = readSoundSensor();                   // get reading from sound sensor
     lightLevel = readLightSensor();                   // get reading from light sensor
-    vibrationLevel = readVibrationSensor();           // get reading from vibration sensor
+    temperature = readTemperatureSensor();            // get reading from vibration sensor
     if (readMotionSensor() == 1)                      // get reading from motion sensor
         motionDetected = true;
     else
@@ -168,14 +168,19 @@ function readSoundSensor()
     return soundSensor.read();
 }
 
-// get vibration sensor reading
-function readVibrationSensor()
+// get temperature sensor reading
+function readTemperatureSensor()
 {
-    // the vibration sensor returns an analog value
-    // which is proportionate to the amount of vibration 
-    // http://www.seeedstudio.com/wiki/Grove_-_Light_Sensor
+    // the temperature sensor returns an analog value
+    // it uses a thermistor which increases resistance as temperature descreases
+    // http://www.seeedstudio.com/wiki/Grove_-_Temperature_Sensor_V1.2
     
-    return vibrationSensor.read();
+    const B=4275;                                     // B constant of the thermistor
+
+    var temp = temperatureSensor.read();              // read value from sensor
+    var R = 1023.0/temp-1.0;                          // calculate resistance
+    
+    return Math.round((1.0/(Math.log(R)/B+1/298.15)-273.15) *  10) /10;  // formula from data sheet; result rounded to one decimal point
 }
 
 /********************************************************************
@@ -207,9 +212,9 @@ function displayValues()
              lcd.write(soundLevel.toString());
              break;
         case 3:
-             lcd.write('Virbation level:');
+             lcd.write('Temperature:');
              lcd.setCursor(1,0);
-             lcd.write(vibrationLevel.toString());
+             lcd.write(temperature.toString());
              break;   
     }
 }
@@ -223,7 +228,7 @@ function displayValues()
 function sendToCloud()
 {
     // create the JSON message with the sensor data
-    var data = JSON.stringify({ deviceId: 'office', sound: soundLevel, light: lightLevel, vibration: vibrationLevel, motion: motionDetected });
+    var data = JSON.stringify({ deviceId: 'Rainier', sound: soundLevel, light: lightLevel, temperature: temperature, motion: motionDetected });
     var message = new Message(data);
     //message.properties.add('myproperty', 'myvalue');
     
