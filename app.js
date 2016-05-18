@@ -37,7 +37,7 @@ var Message = require('azure-iot-device').Message;    // define the message
 
 // Connection string for your Azure IoT Hub instance containing Hostname, Device Id & Device Key in the following format:
 // "HostName=<iothub_host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>"
-var connectionString = 'HostName=conferenceRoomUsage.azure-devices.net;DeviceId=Rainier;SharedAccessKey=s9cW/0rZiM+C6IdZyZrgvrxJyzhLhlK0uLq5/T2jpQg=';
+var connectionString = 'HostName=<your_host>.azure-devices.net;DeviceId=<your_device>;SharedAccessKey=<your_key>';
 
 // fromConnectionString must specify a transport constructor, coming from any transport package.
 var client = Client.fromConnectionString(connectionString, Protocol);
@@ -228,7 +228,7 @@ function displayValues()
 function sendToCloud()
 {
     // create the JSON message with the sensor data
-    var data = JSON.stringify({ deviceId: 'Rainier', sound: soundLevel, light: lightLevel, temperature: temperature, motion: motionDetected });
+    var data = JSON.stringify({ deviceId: <your_device>, sound: soundLevel, light: lightLevel, temperature: temperature, motion: motionDetected });
     var message = new Message(data);
     //message.properties.add('myproperty', 'myvalue');
     
